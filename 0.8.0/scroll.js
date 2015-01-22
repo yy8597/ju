@@ -9,7 +9,7 @@ define(function(require, exports){
     var PageingScroller = require('ui/scroller/pageing-scroller');
 
     exports.init = function(subPub){
-    	subPub.subscribe('init.UI.base.scroll', function($obj, events, config){
+    	subPub.define('base-scroll', function($obj, events, config){
             var sizeArr;
              if(config === undefined){
                 config = defaultConfig;

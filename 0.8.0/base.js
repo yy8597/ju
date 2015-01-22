@@ -13,7 +13,7 @@ define(function(require, exports){
             subPub = new Events();
         }
 
-        this.subPub = subPub;
+        // this.subPub = subPub;
         this.$container = $container;
 
         _.extend(this, subPub);
@@ -31,8 +31,12 @@ define(function(require, exports){
                 }
             });
 
+            var self = this;
             var $container = this.$container;
-            var subPub = this.subPub;
+
+            self.subscribe('_define', function(name, uiInitFn){
+                self.define(name, uiInitFn);
+            });
 
             if(!$container){
                 $container = $('body');
@@ -62,21 +66,30 @@ define(function(require, exports){
                         
                         if(/ju-base/.test(n)){
                             require.async('./' + n.slice(8), function(ui){
-                                ui.init(subPub);
-                                n = n.slice(3).replace(/-/g,'.');
-                                subPub.publish('init.UI.' + n, t, events, config);
-                                subPub.publish('done.UI.' + n, t, events);
+                                ui.init(self);
+                                n = class2event(n.slice(3));
+                                self.publish('init.UI.' + n, t, events, config);
+                                self.publish('done.UI.' + n, t, events);
                             });
                         }else{
                             n = n.slice(3).replace(/-/g,'.');
-                            subPub.publish('init.UI.' + n, t, events, config);
-                            subPub.publish('done.UI.' + n, t, events);
+                            self.publish('init.UI.' + n, t, events, config);
+                            self.publish('done.UI.' + n, t, events);
                         }
                     }
                 });
             });
+        },
+        define : function(name, uiInitFn) {
+            this.subscribe('init.UI.' + class2event(name), function(obj, events, config){
+                uiInitFn(obj, events, config);
+            });
         }
-    })
+    });
+
+    function class2event(name){
+        return name.replace(/-/g,'.');
+    }
 
 
 	return Ju;

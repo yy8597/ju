@@ -8,7 +8,7 @@ define(function(require, exports){
     var delayload = require('util/delayload');
 
     exports.init = function(subPub){
-    	subPub.subscribe('init.UI.base.tab', function($obj, events){
+    	subPub.define('base-tab', function($obj, events){
             tab($obj, {
                 onSwitch: function(i, $cont){
                     delayload.update();
