@@ -84,6 +84,11 @@ define(function(require, exports){
             this.subscribe('init.UI.' + class2event(name), function(obj, events, config){
                 uiInitFn(obj, events, config);
             });
+        },
+        done : function(name, fn) {
+            this.subscribe('init.UI.' + class2event(name), function(obj, events, config){
+                fn(obj, events, config);
+            });
         }
     });
 

@@ -6,7 +6,7 @@
 define(function(require, exports){
 	var $ = require('jquery');
 	var _ = require('underscore');
-    var PageingScroller = require('ui/scroller/pageing-scroller');
+    var PageingLoop = require('ui/pager/1.0.0/paging-loop');
 
     exports.init = function(subPub){
     	subPub.define('base-scroll', function($obj, events, config){
@@ -24,8 +24,8 @@ define(function(require, exports){
                 throw('[ju-scroll] config ' + config + ' error!');
             }
 
-            var DONE = [], pageingScroller;
-            var $parent = parents($obj, 'div.grid');
+            var DONE = [], pageingLoop;
+            var $parent = parents($obj, 'div.grid'); // pptv主站以.grid作为一个模块，如果是其他环境中需要修改
 
             var $bn = $parent.find('.ui-next').on('click', function(e){
                 e.preventDefault();
@@ -37,22 +37,24 @@ define(function(require, exports){
                 events.trigger('onPrev');
             });
 
-            var width = $obj.find('li, dl').outerWidth(true);
-            var count = $obj.find('li, dl').length;
+            $obj.css({
+                'position' : 'relative'
+                , 'overflow' : 'hidden'
+            });
 
             //初始化第一个tab
             var init = function(i){
-                pageingScroller = new PageingScroller({
-                    $cont    : $obj
-                    , width  : width
-                    , count  : count
+                pageingLoop = PageingLoop.create({
+                    $container  : $obj.children(':first')
+                    // , width  : width
+                    // , count  : count
                     , events : events
-                    , pageSize : config[i]
+                    , pageSize : parseInt(config[i])
                 });
             };
             // must start by publish reload
             subPub.subscribe('UI.base.scroll.reload', function(i){
-                pageingScroller && pageingScroller.destory();
+                pageingLoop && pageingLoop.destory();
                 init(i);
             });
         });
